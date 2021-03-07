@@ -100,4 +100,4 @@ def func(**kwargs):
         print(key)
 
 
-func(a=10, b=20, c=30, lol='Hi')
+# func(a=10, b=20, c=30, lol='Hi')

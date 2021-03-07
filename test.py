@@ -1,19 +1,17 @@
-queue = ['Mary', 'Bob', 'Oliy']
-while True:
-    print ('На даний час черга виглядає так: \n' + str(queue))
-    print('1 - add person: ')
-    print('2 - pop person: ')
-    print('3 - print queue: ')
+def change_matrix(matrix):
+    for row in matrix:
+        for i, number in enumerate(row):
+            if number % 2 == 1:
+                row[i] = number * 2
+            else:
+                row[i] = number / 2
 
-    choise = input ('Something new?_')
-    if choise == '1' :
-        name = input('Enter new person: ')
-        queue.append(name)
-    elif choise == '2' :
-        if len(queue) == 0 :
-            print ('Free')
-        else:
-            queue.pop(0)
-    elif choise == '3' :
-        break
+
+matrix = [[2, 6, 8],
+          [6, 9, 5],
+          [7, 3, 1]]
+
+change_matrix(matrix)
+
+print(matrix)
 

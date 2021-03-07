@@ -54,7 +54,17 @@ def create_data():
         'hp': 10,
         'coords': [1, 2],
         'face': '+',
-        'details': 0
+        'details': 0,
+        'ammo': {
+            'arrow': 10,
+            'rock': 10
+        },
+        'main_weapon': {
+            'type': 'bow',
+            'range': 4,
+            'damage': 3,
+            'price': 10
+        }
     }
 
     animals = [
@@ -106,12 +116,62 @@ def game_object_moves(game_object, direction):
             game_object['coords'][1] += 1
 
 
-def player_moves(hero):
+def player_moves(hero, animals):
     print("Герой", hero['name'])
     print("Деталі:", hero['details'])
+    print('Боєприпаси: ', hero['ammo'])
     print('WASD - ходити')
-    direction = input('Ваш вибір: ').lower()
-    game_object_moves(hero, direction)
+    print('x - вистріл')
+    choice = input('Ваш вибір: ').lower()
+    if choice in ['w', 'a', 's', 'd']:
+        game_object_moves(hero, choice)
+    elif choice == 'x':
+        player_shoots(hero, animals)
+
+
+def player_shoots(hero, animals):
+    weapon_type = hero['main_weapon']['type']
+    if weapon_type == 'bow':
+        bow_shoots(hero, animals)
+    elif weapon_type == 'slingshot':
+        pass
+
+
+def bow_shoots(hero, animals):
+    direction = input('Виберіть напрям пострілу: ')
+    if direction in ['w', 'a', 's', 'd']:
+        arrow = {
+            'type': 'arrow',
+            'energy': hero['main_weapon']['range'],
+            'coords': hero['coords'].copy(),
+            'direction': direction,
+            'face': 'x',
+            'damage': hero['main_weapon']['damage']
+        }
+        arrow_fly(arrow, animals, hero)
+
+
+def arrow_fly(arrow, animals, hero):
+    while True:
+        game_object_moves(arrow, arrow['direction'])
+
+        for animal in animals:
+            if arrow['coords'] == animal['coords']:
+                animal_loose_hp(animals, animal, arrow['damage'], hero)
+                return
+
+        if arrow['energy'] == 0:
+            return
+
+        arrow['energy'] -= 1
+
+
+def animal_loose_hp(animals, animal, damage, hero):
+    animal['hp'] -= damage
+    if animal['hp'] <= 0:
+        animals.remove(animal)
+        if animal['type'] == 'курка':
+            hero['details'] += 3
 
 
 def kurka_makes_move(kurka):
@@ -144,9 +204,27 @@ def check_if_player_catches_kurka(animals, hero):
         hero['details'] += 3
 
 
+def spawn_kurka(animals):
+    kurka = {
+        'type': 'курка',
+        'name': random.choice(['Ryaba', 'Koko', 'Kekkek', 'Petya', 'Alice', 'Katia']),
+        'hp': 3,
+        'coords': [random.randint(0, N - 1), random.randint(0, M - 1)],
+        'face': 'k'
+    }
+    animals.append(kurka)
+
+
+def animals_respawn(animals, round_):
+    if round_ % 15 == 0:
+        spawn_kurka(animals)
+    if round_ % 30 == 0:
+        pass
+
+
 def main():
     hero, animals = create_data()
-    round = 1
+    round_ = 1
     while True:
         field = create_field()
         draw_game_object(field, hero)
@@ -154,12 +232,14 @@ def main():
         clear()
         print_field(field)
 
-        player_moves(hero)
+        player_moves(hero, animals)
         check_if_player_catches_kurka(animals, hero)
         animals_moves(animals)
         check_if_player_catches_kurka(animals, hero)
 
-        round += 1
+        animals_respawn(animals, round_)
+
+        round_ += 1
 
 
 main()
