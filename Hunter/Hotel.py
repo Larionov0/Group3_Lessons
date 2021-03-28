@@ -94,7 +94,7 @@ def main_menu(data):
         elif choice == '2':
             search_rooms_menu(data)
         elif choice == '3':
-            pass
+            add_guests(data)
         elif choice == '4':
             statistics(data)
         elif choice == '5':
@@ -204,6 +204,24 @@ def create_init_data():
         ]
     }
     return data
+
+
+def add_guests(data):
+    number_room_search = int(input('Введіть номер: '))
+    count_guests_search = int(input('Введіть кількість гостей: '))
+    result = False
+
+    for room in data['комнаты']:
+        if room['номер'] == number_room_search:
+            if room['заселено'] == 0 and count_guests_search <= room['посетителей допустимо']:
+                room['заселено'] = count_guests_search
+                print('Done')
+                result = True
+            else:
+                print('Номер зайнятий!')
+
+    if not result:
+        print(f"такий номер недоступний!")
 
 
 def main():
