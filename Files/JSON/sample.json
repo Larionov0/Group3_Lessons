@@ -1,0 +1,9 @@
+{
+  "names": ["Bob", "Alan", "Petro"],
+  "enemies": {
+    "names": ["Ally", "Kannie"],
+    "level": 3,
+    "weapons": [{"name": "gun"}, {}],
+    "a": true
+  }
+}

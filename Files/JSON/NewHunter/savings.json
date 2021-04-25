@@ -1,0 +1,44 @@
+{
+    "hero": {
+        "name": "Alex",
+        "hp": 10,
+        "coords": [
+            6,
+            3
+        ],
+        "face": "+",
+        "details": 3,
+        "ammo": {
+            "arrow": 5,
+            "rock": 10
+        },
+        "main_weapon": {
+            "type": "bow",
+            "range": 4,
+            "damage": 3,
+            "price": 10
+        }
+    },
+    "animals": [
+        {
+            "type": "курка",
+            "name": "Biba",
+            "hp": 3,
+            "coords": [
+                6,
+                10
+            ],
+            "face": "k"
+        },
+        {
+            "type": "курка",
+            "name": "Boba",
+            "hp": 3,
+            "coords": [
+                9,
+                7
+            ],
+            "face": "k"
+        }
+    ]
+}
