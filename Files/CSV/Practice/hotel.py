@@ -88,7 +88,8 @@ def main_menu(data):
                '3 - \n' \
                '4 - статистика\n' \
                '5 - подивитися кімнати\n' \
-               '6 - вийти'
+               '6 - збереження\n' \
+               '7 - вийти'
         print(text)
 
         choice = input('Сделайте выбор: ')
@@ -103,6 +104,9 @@ def main_menu(data):
         elif choice == '5':
             show_rooms(data)
         elif choice == '6':
+            print('Збереження')
+            save_data(data)
+        elif choice == '7':
             exit()
 
 
@@ -231,6 +235,27 @@ def add_guests(data):
         print(f"такий номер недоступний!")
 
 
+def items_dict_to_string(items_dict):
+    """
+    :param items_dict: dict
+    :return: str
+
+    f({'a': 1, 'b': 4, 'c': 10}) -> 'a#1; b#4; c#10'
+    """
+    text = ''
+    for key, value in items_dict.items():
+        text += f"{key}#{value}; "
+    return text[:-2]
+
+
+def items_string_to_dict(items_string):  # 'шкаф B#3; стул пластик A#1; кровать D#1'
+    items_dict = {}
+    for item_string in items_string.split('; '):  # 'шкаф B#3'
+        name, amount = item_string.split('#')
+        items_dict[name] = int(amount)
+    return items_dict
+
+
 def save_data(data):
     rooms = data['комнаты']
     headers = ['номер', 'ширина', 'длинна', 'стоимость', 'посетителей допустимо', 'заселено', 'предметы']
@@ -239,16 +264,39 @@ def save_data(data):
         for room in rooms:  # room = {}
             line = ''
             for key, value in room.items():
-                line += f'{value}, '
-            file.write(line[:-2] + '\n')
+                if key != 'предметы':
+                    line += f'{value}, '
+
+            line += items_dict_to_string(room['предметы'])
+            file.write(line + '\n')
 
 
 def load_data():
-    pass
+    rooms = []
+    with open(SAVINGS_FILENAME, 'rt', encoding='utf-8') as file:
+        file.readline()
+        for line in file:
+            room_list = line.rstrip().split(', ')
+            room_dict = {
+                'номер': int(room_list[0]),
+                'ширина': float(room_list[1]),
+                'длинна': float(room_list[2]),
+                'стоимость': float(room_list[3]),
+                'посетителей допустимо': int(room_list[4]),
+                'заселено': int(room_list[5]),
+                'предметы': items_string_to_dict(room_list[6])
+            }
+            rooms.append(room_dict)
+    return {'комнаты': rooms}
 
 
 def main():
-    data = create_init_data()
+    try:
+        data = load_data()
+    except Exception as e:
+        print(f"Сталася проблема з файлом збереження:\n{e}")
+        data = create_init_data()
+
     main_menu(data)
 
 
