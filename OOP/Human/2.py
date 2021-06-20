@@ -47,7 +47,7 @@ h2.age = 20
 # h1.grow_up()
 # h2.grow_up()
 
-child = h1.born_child(h2)
-child.print()
-h1.print()
-h2.print()
+# child = h1.born_child(h2)
+# child.print()
+# h1.print()
+# h2.print()
