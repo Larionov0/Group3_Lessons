@@ -8,6 +8,10 @@ class List:
     head = None
     tail = None
 
+    def __init__(self, *values):
+        for v in values:
+            self.append(v)
+
     def append(self, value):
         new_node = Node()
         new_node.value = value
@@ -20,16 +24,21 @@ class List:
             new_node.prev = self.tail
             self.tail = new_node
 
-    def get_el_by_i(self, index):  # lst[2]   ->   lst.get_el_by_i(2)
+    def get_node_by_i(self, index):
         i = 0
 
         node = self.head
         while True:
-            if i == index:
-                return node.value
+            if node is None:
+                raise Exception(f'List index out of range: {index} / {self.len() - 1}')
 
+            if i == index:
+                return node
             node = node.next
             i += 1
+
+    def get_el_by_i(self, index):  # lst[2]   ->   lst.get_el_by_i(2)
+        return self.get_node_by_i(index).value
 
     def len(self):
         count = 0
@@ -40,38 +49,58 @@ class List:
             node = node.next  # i += 1
         return count
 
+    def remove_node(self, node):
+        if node.prev:
+            node.prev.next = node.next
+        else:
+            self.head = node.next
 
-n1 = Node()
-n1.value = 'a'
+        if node.next:
+            node.next.prev = node.prev
+        else:
+            self.tail = node.prev
 
-n2 = Node()
-n2.value = 'b'
+    def remove(self, value):
+        node = self.head  # i = 0
+        while node is not None:
+            if node.value == value:
+                self.remove_node(node)
+                break
 
-n3 = Node()
-n3.value = 'c'
+            node = node.next
 
-n1.next = n2
-n2.next = n3
+    def pop(self, index):
+        node = self.head  # i = 0
+        i = 0
+        while node is not None:
+            if i == index:
+                self.remove_node(node)
+                return node.value
 
-n3.prev = n2
-n2.prev = n1
+            i += 1
+            node = node.next
+
+    def __getitem__(self, index):  # []
+        return self.get_el_by_i(index)
+
+    def __setitem__(self, index, value):
+        node = self.get_node_by_i(index)
+        node.value = value
+
+    def __str__(self):
+        text = "["
+
+        node = self.head  # i = 0
+        while node is not None:
+            text += node.value.__repr__() + ', '
+            node = node.next
+        text = text[:-2] + ']'
+        return text
 
 
-lst = List()
-lst.head = n1
-lst.tail = n3
+lst = List('a', 'b', 'c', 'd', 'e')
 
+lst.pop(2)
 
-lst.append('d')
-lst.append('e')
-
-
-lst2 = List()
-lst2.append('lol')
-lst2.append('kek')
-
-
-# i = 0
-# while i < lst.len():
-#     print(lst.get_el_by_i(i))
-#     i += 1
+lst[2] = 'lol'
+print(lst)
