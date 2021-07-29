@@ -13,7 +13,7 @@ def print_dict(dct):
 
 def get_exchange_rate_for_year(year, currency):
     response = requests.get(f"{base_url}?json&date=01.01.{year}")
-    data = response.json()
+    data = response.json()  # перетворює строкові JSON-дані в словник
     # print_dict(data)
 
     exchanges = data['exchangeRate']
@@ -50,4 +50,4 @@ def get_currency_info(currency='EUR'):
     go.Figure(data=[diag]).write_html(f'{currency}_prices.html', auto_open=True)
 
 
-get_currency_info('RUB')
+get_currency_info('USD')
