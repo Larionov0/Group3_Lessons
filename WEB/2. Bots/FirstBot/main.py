@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from sensitive_data import TOKEN
+from sensitive_data import TOKEN  # Створіть файл sensitive_data.py і вставте туди змінну з токеном свого бота (створіть його в botfather)
 
 
 MY_CHAT_ID = '358463252'
