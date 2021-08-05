@@ -8,7 +8,6 @@ MY_CHAT_ID = '358463252'
 BASE_URL = 'https://api.telegram.org'
 
 
-
 def print_dict(dct):
     print(json.dumps(dct, indent=4, ensure_ascii=False))
 
@@ -65,4 +64,5 @@ def run():
         time.sleep(0.3)
 
 
-run()
+# run()
+send_message('358463252', 'Hello')
