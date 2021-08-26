@@ -30,8 +30,11 @@ class Bot:
         ]
         self.menu_manager = MenuManager(self)
 
-    def send_message(self, chat_id, text):
-        response = requests.get(f"{self.BASE_URL}/bot{self.token}/sendMessage", params={'chat_id': chat_id, 'text': text})
+    def send_message(self, chat_id, text, keyboard_json=None):
+        params = {'chat_id': chat_id, 'text': text}
+        if keyboard_json:
+            params['reply_markup'] = keyboard_json
+        response = requests.get(f"{self.BASE_URL}/bot{self.token}/sendMessage", params=params)
         result = response.json()
         check_if_ok(result)
 
@@ -41,6 +44,9 @@ class Bot:
         check_if_ok(data)
         return data['result']
 
+    def get_nickname_from_update(self, update):
+        pass
+
     def answer_to_new_messages(self):
         updates = self.get_updates()
 
@@ -48,7 +54,7 @@ class Bot:
             chat_id = update['message']['chat']['id']
             text = update['message']['text']
 
-            self.answer_to_message(chat_id, text)
+            self.answer_to_message(chat_id, text, update)
             self.last_update_id = update['update_id']
 
     def run(self):
@@ -57,20 +63,29 @@ class Bot:
             self.answer_to_new_messages()
             time.sleep(0.5)
 
-    def create_base_user(self, chat_id):
-        new_user = User(chat_id)
+    def create_base_user(self, chat_id, update):
+        chat_dict = update['message']['chat']
+        if 'username' in chat_dict:
+            nickname = chat_dict['username']
+        elif 'last_name' in chat_dict:
+            nickname = chat_dict['last_name']
+        elif 'first_name' in chat_dict:
+            nickname = chat_dict['first_name']
+        else:
+            nickname = 'unknown squirrel'
+        new_user = User(chat_id, nickname=nickname)
         self.users.append(new_user)
         return new_user
 
-    def identify_user(self, chat_id) -> User:
+    def identify_user(self, chat_id, update) -> User:
         for user in self.users:
             if user.chat_id == chat_id:
                 return user
         # Якщо юзера з таким чат айді не було знайдено
-        return self.create_base_user(chat_id)
+        return self.create_base_user(chat_id, update)
 
-    def answer_to_message(self, chat_id, text):
-        user = self.identify_user(chat_id)
+    def answer_to_message(self, chat_id, text, update):
+        user = self.identify_user(chat_id, update)
         # self.send_message(chat_id, f'Ви - {user.chat_id} (рейтинг = {user.rating})')
         if user.next_message_handler is None:
             self.menu_manager.main_menu(user)

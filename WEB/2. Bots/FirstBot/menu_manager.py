@@ -1,20 +1,23 @@
+from tools.keyboards import make_keyboard
+
+
 class MenuManager:
     def __init__(self, bot):
         self.bot = bot
 
     def main_menu(self, user):
-        self.bot.send_message(user.chat_id, '---= Головне меню =---\n'
-                                            '1 - створити лобі\n'
-                                            '2 - увійти в лобі\n'
-                                            '3 - подивитися статистику\n'
-                                            '4 - мій аккаунт\n'
-                                            'Ваш вибір: ')
+        keyboard = make_keyboard([
+            ['створити лобі', 'увійти в лобі'],
+            ['подивитися статистику'],
+            ['мій аккаунт', 'підтримка']
+        ])
+        self.bot.send_message(user.chat_id, '---= Головне меню =---', keyboard)
         user.next_message_handler = self.main_menu_handler
 
     def main_menu_handler(self, user, text):
         if text == '1':
             pass
-        elif text == '2':
+        elif text == 'увійти в лобі':
             self.find_lobby_menu(user)
         elif text == '3':
             pass
@@ -50,3 +53,9 @@ class MenuManager:
                f'Гравці в лобі:\n{users_text}\n' \
                f'0 - вийти з лобі'
         self.bot.send_message(user.chat_id, text)
+        user.next_message_handler = self.lobby_menu_handler
+
+    def lobby_menu_handler(self, user, text):
+        if text == '0':
+            user.lobby.remove_player(user)
+            return self.main_menu(user)
