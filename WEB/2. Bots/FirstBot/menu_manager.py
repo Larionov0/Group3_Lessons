@@ -42,7 +42,8 @@ class MenuManager:
         # FIXME: передбачити можливість неправильного вводу від користувача
 
         lobby.add_player(user)
-        self.lobby_menu(user, lobby)
+        for player in lobby.players:
+            self.lobby_menu(player, lobby)
 
     def lobby_menu(self, user, lobby):
         users_text = ''
@@ -50,12 +51,14 @@ class MenuManager:
             users_text += f'- {player.nickname}\n'
 
         text = f'---= Лоббі {lobby.name} =---\n' \
-               f'Гравці в лобі:\n{users_text}\n' \
-               f'0 - вийти з лобі'
-        self.bot.send_message(user.chat_id, text)
+               f'Гравці в лобі:\n{users_text}\n'
+        self.bot.send_message(user.chat_id, text, make_keyboard([['Вийти']]))
         user.next_message_handler = self.lobby_menu_handler
 
     def lobby_menu_handler(self, user, text):
-        if text == '0':
-            user.lobby.remove_player(user)
+        if text == 'Вийти':
+            lobby = user.lobby
+            lobby.remove_player(user)
+            for player in lobby.players:
+                self.lobby_menu(player, lobby)
             return self.main_menu(user)

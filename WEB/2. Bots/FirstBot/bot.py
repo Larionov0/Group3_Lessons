@@ -31,9 +31,12 @@ class Bot:
         self.menu_manager = MenuManager(self)
 
     def send_message(self, chat_id, text, keyboard_json=None):
-        params = {'chat_id': chat_id, 'text': text}
-        if keyboard_json:
-            params['reply_markup'] = keyboard_json
+        params = {
+            'chat_id': chat_id,
+            'text': text,
+            'reply_markup': keyboard_json if keyboard_json else json.dumps({'remove_keyboard': True})
+        }
+
         response = requests.get(f"{self.BASE_URL}/bot{self.token}/sendMessage", params=params)
         result = response.json()
         check_if_ok(result)
@@ -51,6 +54,9 @@ class Bot:
         updates = self.get_updates()
 
         for update in updates:
+            if 'message' not in update or 'text' not in update['message']:
+                self.last_update_id = update['update_id']
+                continue
             chat_id = update['message']['chat']['id']
             text = update['message']['text']
 
