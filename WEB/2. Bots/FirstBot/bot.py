@@ -25,8 +25,8 @@ class Bot:
         self.last_update_id = 0
         self.users: List[User] = []
         self.lobbies: List[Lobby] = [
-            Lobby(1, 'Універсальне', 5),
-            Lobby(2, 'Українське', 3)
+            Lobby(self, 1, 'Універсальне', 5),
+            Lobby(self, 2, 'Українське', 2)
         ]
         self.menu_manager = MenuManager(self)
 

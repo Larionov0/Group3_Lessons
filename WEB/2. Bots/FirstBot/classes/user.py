@@ -10,3 +10,5 @@ class User:
         self.purchases_history = purchases_history
         self.next_message_handler = None
         self.lobby = None
+
+        self.role = ''
